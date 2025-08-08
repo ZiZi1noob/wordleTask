@@ -1,5 +1,5 @@
 import readline from "readline";
-import { readSettings, getLetterSymbols } from "./utils.js";
+import { readSettings, getLetterSymbols } from "../utils.js";
 
 class NormalWordleGame {
   constructor(settings, debugMode = false) {
