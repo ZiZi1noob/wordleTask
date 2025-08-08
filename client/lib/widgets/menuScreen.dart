@@ -3,14 +3,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:wordle/widgets/wordleScreen.dart' show WordleScreen;
 
 class MenuScreen extends StatelessWidget {
-  final String account;
-
-  const MenuScreen({super.key, required this.account});
+  const MenuScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final name = 'temp';
     return Scaffold(
-      appBar: AppBar(title: Text('Welcome, $account'), centerTitle: true),
+      appBar: AppBar(title: Text('Welcome, $name'), centerTitle: true),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

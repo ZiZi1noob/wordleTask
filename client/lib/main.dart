@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:wordle/widgets/accountScreen.dart' show AccountScreen;
+import 'package:provider/provider.dart';
+import 'package:wordle/widgets/mainScreen.dart' show MainScreen;
+import 'package:wordle/provider/accountProv.dart' show AccountProvider;
 
 void main() {
-  runApp(const WordleApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => AccountProvider(),
+      child: const WordleApp(),
+    ),
+  );
 }
 
 class WordleApp extends StatelessWidget {
@@ -20,7 +27,7 @@ class WordleApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const AccountScreen(),
+      home: const MainScreen(),
     );
   }
 }
