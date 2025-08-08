@@ -9,9 +9,23 @@ function readSettings(path) {
 
     return settings;
   } catch (error) {
-    console.error("Error reading settings file:", error.message);
     throw error; // Re-throw the error for the caller to handle
   }
 }
 
-export { readSettings };
+function getLetterSymbols(result) {
+  return result
+    .map(({ status }) => {
+      switch (status) {
+        case "hit":
+          return "O";
+        case "present":
+          return "?";
+        default:
+          return "_";
+      }
+    })
+    .join(" ");
+}
+
+export { readSettings, getLetterSymbols };
