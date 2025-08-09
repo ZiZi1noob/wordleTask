@@ -1,66 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:wordle/models/userModel.dart';
 import 'package:wordle/services/userService.dart' show UserService;
 
 class AccountProvider with ChangeNotifier {
-  String? _name;
+  UserModel? _user;
   bool _isLoading = false;
-  bool _isResumeGame = false;
-  Map<String, dynamic> _stats = {};
 
   // Getters
-  String? get name => _name;
+  String? get name => _user?.user.username;
   bool get isLoading => _isLoading;
-  bool get isResumeGame => _isResumeGame;
-  Map<String, dynamic> get stats => _stats;
+  bool get isResumeGame => _user?.gameHistory.pending != null;
+  UserStats? get stats => _user?.stats;
+  UserModel? get userData => _user;
 
-  // Login with async loading and stats
   Future<void> getUserInfo(String name, BuildContext context) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      // 1. First call: Get user info
-      final userInfo = await UserService().getUserInfo(name);
-      print('userInfo:  ${userInfo}');
-      // 2. Second call: Get user stats (assuming you have a similar service method)
-      final userStats = await _fetchUserStats(
-        name,
-      ); // This should also be a real API call
+      final response = await UserService().getUserInfo(name);
 
-      // 3. Update state with real data
-      _name = name;
-      _isResumeGame = userStats['pending_game'] ?? false;
-      _stats = userStats;
-
-      // Optional: You might want to store the user info somewhere
-      // _userInfo = userInfo;
-    } catch (e) {
-      // Convert API errors to user-friendly messages
-      final errorMessage =
-          e.toString().contains('Login failed')
-              ? e.toString()
-              : 'Failed to login. Please try again.';
-      throw Exception(errorMessage);
+      if (response.isSuccess && response.data != null) {
+        _user = response.data!;
+        print('User state updated: $_user');
+      } else {
+        throw response.message ?? 'Failed to get user info';
+      }
+    } catch (e, stackTrace) {
+      print('Error fetching user info: $e\n$stackTrace');
+      rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  // Mock stats fetch (replace with real API call)
-  Future<Map<String, dynamic>> _fetchUserStats(String name) async {
-    return {
-      'wins': 12,
-      'losses': 3,
-      'pending_game': name.contains('resume'), // Example logic
-    };
+  void logout() {
+    _user = null;
+    notifyListeners();
+    print('User logged out');
   }
 
-  // Logout
-  void logout() {
-    _name = null;
-    _isResumeGame = false;
-    _stats = {};
-    notifyListeners();
+  // Helper methods
+  double get winPercentage => _user?.stats.winPercentage ?? 0.0;
+  List<int> get guessDistribution =>
+      _user?.stats.guessDistribution ?? [0, 0, 0, 0, 0, 0];
+
+  bool hasPendingGame() {
+    return _user?.gameHistory.pending != null;
   }
+
+  // GameRecord? get pendingGame {
+  //   final pending = _user?.gameHistory.pending;
+  //   return pending is GameRecord ? pending : null;
+  // }
 }

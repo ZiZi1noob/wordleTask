@@ -1,31 +1,33 @@
 import 'package:wordle/services/base/apiConstants.dart' show ApiConstants;
 import 'package:wordle/models/apiResponseModel.dart' show ApiResModel;
+import 'package:wordle/models/userModel.dart' show UserModel;
 import 'base/apiClient.dart';
 
 class UserService {
   final ApiClient _apiClient = ApiClient();
 
-  Future<Map<String, dynamic>> getUserInfo(String name) async {
+  Future<ApiResModel<UserModel>> getUserInfo(String name) async {
     try {
-      String uri = '/api/v1/user/get-info/$name';
+      final uri = '/api/v1/user/get-info/$name';
 
       final response = await _apiClient.get(
         uri,
         headers: ApiConstants.formHeaders,
       );
 
-      final apiResponse = ApiResModel<Map<String, dynamic>>.fromJson(
+      final apiResponse = ApiResModel<UserModel>.fromJson(
         response.data,
-        (data) => data as Map<String, dynamic>,
+        (data) => UserModel.fromJson(data),
       );
 
       if (apiResponse.isSuccess && apiResponse.data != null) {
-        return apiResponse.data!;
+        return apiResponse;
       } else {
-        throw apiResponse.message ?? 'Failed to get user info';
+        throw Exception(apiResponse.message ?? 'Failed to get user info');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       print('Error fetching user info: $e');
+      print('Stack trace: $stackTrace');
       rethrow;
     }
   }
