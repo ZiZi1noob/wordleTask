@@ -267,17 +267,10 @@ class _WordleScreenState extends State<WordleScreen> {
                     );
                     setState(() {});
                   },
-                  onSubmitted: (value) {
-                    if (_guessController.text.length == 5) {
-                      HapticFeedback.lightImpact();
-                      _submitGuess();
-                    } else {
-                      notifyMsg(
-                        'Please enter exactly 5 letters!',
-                        context,
-                        Theme.of(context).colorScheme.error,
-                      );
-                    }
+
+                  onSubmitted: (_) {
+                    HapticFeedback.lightImpact();
+                    _submitGuess();
                   },
                 ),
               ),

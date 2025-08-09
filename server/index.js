@@ -4,13 +4,18 @@ import dotenv from "dotenv";
 import app from "./http-server.js";
 
 // Initialize environment variables
-dotenv.config({ path: "./.env" });
+dotenv.config({ path: "../client/.env" });
+
+const PORT = process.env.PORT;
+const HOST = process.env.HOST;
+const HTTP_PORTOCOL = process.env.HTTP_PORTOCOL;
+const NODE_ENV = process.env.NODE_ENV;
 
 // Display important environment configuration
 console.log("\n=== Environment Configuration ===");
-console.log(`Server Port: ${process.env.PORT}`);
+console.log(`Server URL: ${HTTP_PORTOCOL}://${HOST}:${PORT}`);
+console.log(`Node Environment: ${NODE_ENV}`);
 
-console.log(`Node Environment: ${process.env.NODE_ENV || "development"}`);
 console.log(
   "================================================================\n"
 );
@@ -18,14 +23,10 @@ console.log(
 // Create HTTP server
 const server = http.createServer(app);
 
-// Setup WebSocket server
-
 // Start the server
 try {
-  server.listen(process.env.PORT, () => {
-    console.log(
-      `✅ Successfully running backend service http://localhost:${process.env.PORT}`
-    );
+  server.listen(PORT, HOST, () => {
+    console.log(`✅ Server running at ${HTTP_PORTOCOL}://${HOST}:${PORT}`);
     console.log(
       "================================================================\n\n"
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wordle/services/userService.dart' show UserService;
 
 class AccountProvider with ChangeNotifier {
   String? _name;
@@ -13,25 +14,33 @@ class AccountProvider with ChangeNotifier {
   Map<String, dynamic> get stats => _stats;
 
   // Login with async loading and stats
-  Future<void> login(String name) async {
+  Future<void> getUserInfo(String name, BuildContext context) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      // Simulate API call (replace with actual backend logic)
-      await Future.delayed(const Duration(seconds: 1));
+      // 1. First call: Get user info
+      final userInfo = await UserService().getUserInfo(name);
+      print('userInfo:  ${userInfo}');
+      // 2. Second call: Get user stats (assuming you have a similar service method)
+      final userStats = await _fetchUserStats(
+        name,
+      ); // This should also be a real API call
 
-      // Mock response - replace with real data fetching
-      final mockStats = await _fetchUserStats(name);
-      final bool hasResumeGame = mockStats['pending_game'] ?? false;
-
-      // Update state
+      // 3. Update state with real data
       _name = name;
-      _isResumeGame = hasResumeGame;
-      _stats = mockStats;
+      _isResumeGame = userStats['pending_game'] ?? false;
+      _stats = userStats;
+
+      // Optional: You might want to store the user info somewhere
+      // _userInfo = userInfo;
     } catch (e) {
-      // Handle errors (e.g., show snackbar)
-      rethrow;
+      // Convert API errors to user-friendly messages
+      final errorMessage =
+          e.toString().contains('Login failed')
+              ? e.toString()
+              : 'Failed to login. Please try again.';
+      throw Exception(errorMessage);
     } finally {
       _isLoading = false;
       notifyListeners();

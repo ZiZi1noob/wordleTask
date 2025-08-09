@@ -49,11 +49,12 @@ class _MainScreenState extends State<MainScreen> {
                     // Animated Title
                     Text(
                           'WORDLE',
-                          style: Theme.of(context).textTheme.displayLarge
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 4,
-                              ),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.displayLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 4,
+                          ),
                         )
                         .animate()
                         .fadeIn(duration: 500.ms)
@@ -87,50 +88,112 @@ class _MainScreenState extends State<MainScreen> {
                     SizedBox(height: screenHeight * 0.03),
 
                     // Submit Button with Loading State
-                    Consumer<AccountProvider>(
-                          builder: (context, provider, child) {
+                    // Consumer<AccountProvider>(
+                    //       builder: (context, provider, child) {
+                    //         return FilledButton.tonal(
+                    //           onPressed:
+                    //               provider.isLoading
+                    //                   ? null
+                    //                   : () async {
+                    //                     if (_formKey.currentState!.validate()) {
+                    //                       try {
+                    //                         await provider.login(
+                    //                           _nameController.text,
+                    //                           context,
+                    //                         );
+                    //                         if (mounted) {
+                    //                           Navigator.push(
+                    //                             context,
+                    //                             MaterialPageRoute(
+                    //                               builder:
+                    //                                   (context) =>
+                    //                                       const MenuScreen(),
+                    //                             ),
+                    //                           );
+                    //                         }
+                    //                       } catch (e) {
+                    //                         if (mounted) {
+                    //                           ScaffoldMessenger.of(
+                    //                             context,
+                    //                           ).showSnackBar(
+                    //                             SnackBar(
+                    //                               content: Text(
+                    //                                 'Error: ${e.toString()}',
+                    //                               ),
+                    //                             ),
+                    //                           );
+                    //                         }
+                    //                       }
+                    //                     }
+                    //                   },
+                    //           style: FilledButton.styleFrom(
+                    //             minimumSize: const Size(double.infinity, 50),
+                    //             shape: RoundedRectangleBorder(
+                    //               borderRadius: BorderRadius.circular(12),
+                    //             ),
+                    //           ),
+                    //           child:
+                    //               provider.isLoading
+                    //                   ? const CircularProgressIndicator(
+                    //                     color: Colors.white,
+                    //                   )
+                    //                   : const Text('Continue'),
+                    //         );
+                    //       },
+                    //     )
+                    Selector<AccountProvider, bool>(
+                          selector: (_, provider) => provider.isLoading,
+                          builder: (context, isLoading, child) {
                             return FilledButton.tonal(
-                              onPressed: provider.isLoading
-                                  ? null
-                                  : () async {
-                                      if (_formKey.currentState!.validate()) {
-                                        try {
-                                          await provider.login(
-                                            _nameController.text,
-                                          );
-                                          if (mounted) {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const MenuScreen(),
-                                              ),
-                                            );
-                                          }
-                                        } catch (e) {
-                                          if (mounted) {
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: Text(
-                                                  'Error: ${e.toString()}',
+                              onPressed:
+                                  isLoading
+                                      ? null
+                                      : () async {
+                                        if (_formKey.currentState!.validate()) {
+                                          try {
+                                            await context
+                                                .read<AccountProvider>()
+                                                .getUserInfo(
+                                                  _nameController.text,
+                                                  context,
+                                                );
+                                            if (mounted) {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) =>
+                                                          const MenuScreen(),
                                                 ),
-                                              ),
-                                            );
+                                              );
+                                            }
+                                          } catch (e) {
+                                            if (mounted) {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    'Error: ${e.toString()}',
+                                                  ),
+                                                ),
+                                              );
+                                            }
                                           }
                                         }
-                                      }
-                                    },
+                                      },
                               style: FilledButton.styleFrom(
                                 minimumSize: const Size(double.infinity, 50),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              child: provider.isLoading
-                                  ? const CircularProgressIndicator()
-                                  : const Text('Continue'),
+                              child:
+                                  isLoading
+                                      ? const CircularProgressIndicator(
+                                        color: Colors.white,
+                                      )
+                                      : const Text('Continue'),
                             );
                           },
                         )
